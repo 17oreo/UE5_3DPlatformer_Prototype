@@ -41,7 +41,7 @@ public:
 			const FHitResult & SweepResult);
 
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-			int32 Coins;
+			int Coins;
 
 		UPROPERTY(EditAnywhere, Category = "UI HUD")
 			TSubclassOf<UUserWidget> PlayerCoinWidgetClass;
@@ -54,11 +54,19 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Jump() override;
+	virtual void Landed(const FHitResult& Hit) override;
+
+	int JumpCount;
+	int MaxJumpCount;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void TryDoubleJump();
 
 };

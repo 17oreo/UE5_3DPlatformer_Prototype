@@ -37,6 +37,10 @@ AMainPlayer::AMainPlayer()
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	Coins = 0;
+
+	//Jump stuff
+	JumpCount = 0;
+	MaxJumpCount = 2;
 		 
 
 }
@@ -72,11 +76,8 @@ void AMainPlayer::OnBeginOverlap(class UPrimitiveComponent* HitComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Something overlapped with player!"));
-
 	if (OtherActor->ActorHasTag("Coin"))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Coin Collected"));
 		Coins++;
 		OtherActor->Destroy();
 	}
@@ -118,9 +119,6 @@ void AMainPlayer::Tick(float DeltaTime)
 		FTimerHandle UnusedHandle;
 		GetWorldTimerManager().SetTimer(UnusedHandle, this, &AMainPlayer::RestartGame, 1.0f, false); //Restart the level after 3 seconds
 	}
-
-	
-
 }
 
 // Called to bind functionality to input
@@ -137,4 +135,41 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
 }
+
+void AMainPlayer::Jump()
+{
+	//Check if the character is on the floor 
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		Super::Jump();
+		JumpCount++;
+	}
+	//check if the character is in the air and has jumps left
+	else if (GetCharacterMovement()->IsFalling())
+	{
+		//Try to double jump
+		TryDoubleJump();
+	}
+}
+
+void AMainPlayer::TryDoubleJump()
+{
+	if (JumpCount < MaxJumpCount)
+	{
+		
+		// Give an upward impulse manually
+		FVector JumpVelocity = FVector(0.f, 0.f, GetCharacterMovement()->JumpZVelocity * 0.8f);
+		LaunchCharacter(JumpVelocity, false, true);
+
+		JumpCount++;
+	}
+}
+
+void AMainPlayer::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	JumpCount = 0; // Reset jump count when touching ground
+}
+
+
 
