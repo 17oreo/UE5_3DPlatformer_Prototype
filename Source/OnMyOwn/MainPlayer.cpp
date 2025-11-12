@@ -33,7 +33,7 @@ AMainPlayer::AMainPlayer()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; //Character moves in the direction of input
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f); //Rotation rate	
-	GetCharacterMovement()->JumpZVelocity = 600.f;
+	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	Coins = 0;
@@ -113,6 +113,8 @@ void AMainPlayer::Tick(float DeltaTime)
 	if (PlayerLocation.Z < -50.0f)
 	{
 		bDead = true;
+		GetMesh()->SetSimulatePhysics(true); //Enable physics simulation on the mesh
+
 		FTimerHandle UnusedHandle;
 		GetWorldTimerManager().SetTimer(UnusedHandle, this, &AMainPlayer::RestartGame, 1.0f, false); //Restart the level after 3 seconds
 	}
