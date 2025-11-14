@@ -13,7 +13,7 @@ Master precise movement, time your jumps across **moving platforms**, and collec
 ### 🧩 Core Features
 - 🧍 **Custom Character Controller**
   - All movement logic coded from scratch in **C++**, using template animations only for visuals.
-- ⚡ **Dash Mechanic**
+- ⚡ **Dash Mechanic** -- in progress
   - Short burst of directional speed with cooldown and momentum control.
 - 🌀 **Double Jump**
   - Secondary mid-air jump tracked and reset on landing.
@@ -25,7 +25,8 @@ Master precise movement, time your jumps across **moving platforms**, and collec
   - On-screen widget showing coin count and (optional) dash cooldown indicator.
 - 💀 **Death**
   - Game restarts after 1 second after falling off the platforms
-
+- 🎶 **Audio**
+  - Background audio from Starter Pack 
 ---
 
 
