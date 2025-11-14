@@ -50,6 +50,16 @@ public:
 
 		void RestartGame();
 
+		UPROPERTY(EditAnywhere, Category="Audio")
+		USoundBase* CoinSound;
+
+		UFUNCTION()
+		void StartCrouch();
+
+		UFUNCTION()
+		void StopCrouch();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

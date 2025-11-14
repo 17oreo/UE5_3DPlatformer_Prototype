@@ -42,7 +42,7 @@ AMainPlayer::AMainPlayer()
 	JumpCount = 0;
 	MaxJumpCount = 2;
 		 
-
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 void AMainPlayer::MoveForward(float axis)
@@ -79,6 +79,7 @@ void AMainPlayer::OnBeginOverlap(class UPrimitiveComponent* HitComp,
 	if (OtherActor->ActorHasTag("Coin"))
 	{
 		Coins++;
+		UGameplayStatics::PlaySoundAtLocation(this, CoinSound, OtherActor->GetActorLocation()); //Play coin sound at the location of the coin
 		OtherActor->Destroy();
 	}
 }
@@ -134,6 +135,9 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
+
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AMainPlayer::StartCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &AMainPlayer::StopCrouch);
 }
 
 void AMainPlayer::Jump()
@@ -169,6 +173,16 @@ void AMainPlayer::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	JumpCount = 0; // Reset jump count when touching ground
+}
+
+void AMainPlayer::StartCrouch()
+{
+	Crouch();
+}
+
+void AMainPlayer::StopCrouch()
+{
+	UnCrouch();
 }
 
 
