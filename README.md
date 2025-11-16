@@ -7,14 +7,12 @@ The goal of this project is to design and implement a responsive third-person mo
 
 ## 🎮 Gameplay Overview
 
-Control a nimble character who can **run**, **double jump**, and **dash** through an obstacle-filled 3D environment.  
+Control a nimble character who can **run**, **double jump**, and **crouch** through an obstacle-filled 3D environment.  
 Master precise movement, time your jumps across **moving platforms**, and collect coins scattered throughout the level.
 
 ### 🧩 Core Features
 - 🧍 **Custom Character Controller**
   - All movement logic coded from scratch in **C++**, using template animations only for visuals.
-- ⚡ **Dash Mechanic** -- in progress
-  - Short burst of directional speed with cooldown and momentum control.
 - 🌀 **Double Jump**
   - Secondary mid-air jump tracked and reset on landing.
 - 🧱 **Moving Platforms**
