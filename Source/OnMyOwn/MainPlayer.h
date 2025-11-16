@@ -70,6 +70,11 @@ public:
 		
 		float CurrentCameraOffsetZ = 0.f;
 
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Idle Dance")
+		bool bIsDancing;
+
+		float timeSinceLastMovement = 0.0f;
+
 
 
 protected:

@@ -126,15 +126,28 @@ void AMainPlayer::Tick(float DeltaTime)
 		GetWorldTimerManager().SetTimer(UnusedHandle, this, &AMainPlayer::RestartGame, 1.0f, false); //Restart the level after 3 seconds
 	}
 
-	float HeightDiff = StandingCapsuleHalfHeight - CrouchingCapsuleHalfHeight;
+	//Idle dance check
+	if (GetVelocity().Size() > 0.0f)
+	{
+		timeSinceLastMovement = 0.0f;
+		bIsDancing = false;
+	}
+	else
+	{
+		timeSinceLastMovement += DeltaTime;
+		if (timeSinceLastMovement >= 3.0f && !bIsDancing) //If the player hasn't moved for 5 seconds
+		{
+			bIsDancing = true;
+		}
+	}
 
+	//Crouch camera adjustment
+	float HeightDiff = StandingCapsuleHalfHeight - CrouchingCapsuleHalfHeight;
 	float TargetOffsetZ = bIsCrouchingCustom ? HeightDiff : 0.f;
 
 	CurrentCameraOffsetZ = FMath::FInterpTo(CurrentCameraOffsetZ, TargetOffsetZ, DeltaTime, 500.0f);
 
-	FollowCamera->SetRelativeLocation(
-		FVector(0.f, 0.f, CurrentCameraOffsetZ)
-	);
+	FollowCamera->SetRelativeLocation(FVector(0.f, 0.f, CurrentCameraOffsetZ));
 
 }
 
