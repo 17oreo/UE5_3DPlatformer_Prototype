@@ -18,13 +18,16 @@ Master precise movement, time your jumps across **moving platforms**, and collec
 - 🧱 **Moving Platforms**
   - Sinusoidal platform motion with player velocity inheritance for smooth traversal.
 - 💰 **Collectible Coins**
-  - Rotating coin actors that detect overlap, increment score, and update UI.
+  - Rotating and floating coin actors that detect overlap, increment score, and update UI.
+  - Play audio when collected
 - 🎛️ **UI Integration**
   - On-screen widget showing coin count and (optional) dash cooldown indicator.
 - 💀 **Death**
   - Game restarts after 1 second after falling off the platforms
 - 🎶 **Audio**
-  - Background audio from Starter Pack 
+  - Background audio from Starter Pack
+- 🕺 **Dancing**
+  - Begins to dance after being idle for 3 seconds
 ---
 
 
