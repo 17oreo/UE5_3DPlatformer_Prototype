@@ -59,6 +59,18 @@ public:
 		UFUNCTION()
 		void StopCrouch();
 
+		UFUNCTION()
+		void ToggleCrouch();
+
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
+		bool bIsCrouchingCustom = false;
+
+		float StandingCapsuleHalfHeight = 88.f;
+		float CrouchingCapsuleHalfHeight = 44.f;
+		
+		float CurrentCameraOffsetZ = 0.f;
+
+
 
 protected:
 	// Called when the game starts or when spawned

@@ -4,6 +4,7 @@
 #include "MainPlayer.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -24,6 +25,7 @@ AMainPlayer::AMainPlayer()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f; //The camera follows at
 	CameraBoom->bUsePawnControlRotation = true; //Rotate the arm based on the controller
+	CameraBoom->bDoCollisionTest = false; //Tell the camera boom NOT to follow collision changes instantly
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); //Attach the camera to the end of the boom
@@ -43,6 +45,7 @@ AMainPlayer::AMainPlayer()
 	MaxJumpCount = 2;
 		 
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	bIsCrouchingCustom = false;
 }
 
 void AMainPlayer::MoveForward(float axis)
@@ -101,6 +104,8 @@ void AMainPlayer::BeginPlay()
 		PlayerCoinWidget = CreateWidget(GetWorld(), PlayerCoinWidgetClass);
 		PlayerCoinWidget->AddToViewport();
 	}
+
+	//CurrentBoomZ = CameraBoom->TargetOffset.Z;
 }
 
 
@@ -120,6 +125,17 @@ void AMainPlayer::Tick(float DeltaTime)
 		FTimerHandle UnusedHandle;
 		GetWorldTimerManager().SetTimer(UnusedHandle, this, &AMainPlayer::RestartGame, 1.0f, false); //Restart the level after 3 seconds
 	}
+
+	float HeightDiff = StandingCapsuleHalfHeight - CrouchingCapsuleHalfHeight;
+
+	float TargetOffsetZ = bIsCrouchingCustom ? HeightDiff : 0.f;
+
+	CurrentCameraOffsetZ = FMath::FInterpTo(CurrentCameraOffsetZ, TargetOffsetZ, DeltaTime, 500.0f);
+
+	FollowCamera->SetRelativeLocation(
+		FVector(0.f, 0.f, CurrentCameraOffsetZ)
+	);
+
 }
 
 // Called to bind functionality to input
@@ -130,18 +146,22 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump); //IE_Pressed binds jump to when the key is pressed
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping); //IE_Released binds stop jumping to when the key is released
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainPlayer::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMainPlayer::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
 
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AMainPlayer::StartCrouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &AMainPlayer::StopCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AMainPlayer::ToggleCrouch);
 }
 
 void AMainPlayer::Jump()
 {
+	// Prevent jumping while crouched
+	if (bIsCrouchingCustom)
+	{
+		return;
+	}
 	//Check if the character is on the floor 
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -175,14 +195,32 @@ void AMainPlayer::Landed(const FHitResult& Hit)
 	JumpCount = 0; // Reset jump count when touching ground
 }
 
+void AMainPlayer::ToggleCrouch()
+{
+	if (bIsCrouchingCustom)
+	{
+		StopCrouch();
+	}
+	else
+	{
+		StartCrouch();
+	}
+}
+
 void AMainPlayer::StartCrouch()
 {
 	Crouch();
+	//GetCharacterMovement()->bWantsToCrouch = true;
+	bIsCrouchingCustom = true;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 }
 
 void AMainPlayer::StopCrouch()
 {
 	UnCrouch();
+	//GetCharacterMovement()->bWantsToCrouch = false;
+	bIsCrouchingCustom = false;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 }
 
 
